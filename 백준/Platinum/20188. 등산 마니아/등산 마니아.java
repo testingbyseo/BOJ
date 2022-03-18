@@ -41,14 +41,14 @@ public class Main {
         }
 
         dfs(1);
-        
+        answer -= combi(n);
 
         bw.write(String.valueOf(answer));
         bw.flush();
         bw.close();
 
     }
-    static long dfs(int now){
+    static int dfs(int now){
         d[now] = 1;
         for(int a : adj[now]){
             if(d[a] == 0){
@@ -58,11 +58,8 @@ public class Main {
         //  u-->v 를 연결 간선을 선택하는 경우의 수
         //  [전체에서 2개 노드 선택 경우] - ["v와 그 서브트리를" 제외한 서브트리에서 두 노드를 선택하는 경우의 수]
         //     nC2                      (u-->v 간선 선택할일 전혀없음)
-        
-        if(now != 1){
-            answer += combi(n) - combi(n - d[now]);
-        }
-        
+
+        answer += combi(n) - combi(n - d[now]);
         return d[now];
 
     }
