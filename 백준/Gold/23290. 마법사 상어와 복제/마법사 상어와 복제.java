@@ -177,14 +177,19 @@ public class Main {
     static int[] sdy = {0, 0, -1, 0, 1};
     static int killFish(){
 
-        Pos cur = new Pos(shark.x, shark.y, 0);
+        // Pos cur = new Pos(shark.x, shark.y, 0);
+        int nx = shark.x;
+        int ny = shark.y;
         int num = 0;
         boolean[][] visit = new boolean[5][5];
 
         for(int i=0; i<3; i++){
             int dir = path[i];
-            int nx = cur.x + sdx[dir];
-            int ny = cur.y + sdy[dir];
+            // int nx = cur.x + sdx[dir];
+            // int ny = cur.y + sdy[dir];
+
+            nx += sdx[dir];
+            ny += sdy[dir];
 
             if(nx < 1 || nx > 4 || ny < 1 || ny > 4)
                 return -1;
@@ -192,8 +197,8 @@ public class Main {
                 visit[nx][ny] = true;
                 num += map[nx][ny].size();
             }
-            cur.x = nx;
-            cur.y = ny;
+            // cur.x = nx;
+            // cur.y = ny;
         }
         return num;
 
@@ -222,21 +227,18 @@ public class Main {
         maxKill = -1;
         dfs(0);
 
-        int x = shark.x;
-        int y = shark.y;
+
         for(int i=0; i<3; i++){
             int dir = arr[i];
-            int nextX = x + sdx[dir];
-            int nextY = y + sdy[dir];
+            int nextX = shark.x + sdx[dir];
+            int nextY = shark.y + sdy[dir];
 
             if(map[nextX][nextY].size() > 0){
                 fishSmellMap[nextX][nextY] = 2;
                 map[nextX][nextY].clear();
             }
-            x = nextX;
-            y = nextY;
-            shark.x = x;
-            shark.y = y;
+            shark.x = nextX;
+            shark.y = nextY;
 
         }
 
