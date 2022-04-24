@@ -24,6 +24,7 @@ public class Main {
     static ArrayList<Ball>[][] map;
     static StringBuilder sb;
     static int answer;
+    static Queue<Ball> q;
     public static void main(String[] args) throws Exception {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -36,6 +37,7 @@ public class Main {
         k = Integer.parseInt(st.nextToken());
         map = new ArrayList[n+1][n+1];
         init(map);
+        q = new LinkedList<>();
 
         for(int i=0; i<m; i++){
             st = new StringTokenizer(br.readLine());
@@ -44,29 +46,19 @@ public class Main {
             int m = Integer.parseInt(st.nextToken());
             int s = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
-
-            map[r][c].add(new Ball(r, c, m, s, d));
+            
+            q.add(new Ball(r, c, m, s, d));
         }
 
-        process();
+       
+        processWithq();
 
         bw.write(String.valueOf(answer));
         bw.flush();
         bw.close();
 
     }
-    static void print() {
-        for(int i=1; i<n+1; i++){
-            for(int j=1; j<n+1; j++){
-                if(map[i][j].size() > 0){
-                    for(Ball b : map[i][j]){
-                        System.out.println(b.r + " " + b.c + " " + b.m + " " + b.s + " " + b.d);
-                    }
-                }
-            }
-        }
-    }
-
+    
     static void init(ArrayList<Ball>[][] list){
         for(int i=1; i<n+1; i++){
             for(int j=1; j<n+1; j++){
@@ -74,53 +66,54 @@ public class Main {
             }
         }
     }
-    static void process(){
-
+    static void processWithq() {
         while(k-- > 0){
-            move();
-            divide();
-            // System.out.println("k " + k);
-            // print();
+            moveWithq();
+            divideWithq();
+            init(map);
         }
-        countMass();
-    }
-    static void countMass() {
         answer = 0;
+        while(!q.isEmpty()){
+            answer += q.poll().m;
+        }
+
+    }
+    
+    static void moveWithq() {
+
+        while(!q.isEmpty()){
+            Ball now = q.poll();
+            Ball moved = moveBall(now);
+            map[moved.r][moved.c].add(moved);
+        }
+
+    }
+    static void divideWithq() {
         for(int i=1; i<n+1; i++){
             for(int j=1; j<n+1; j++){
-                if(map[i][j].size() > 0){
-                    for(Ball b : map[i][j]){
-                        answer += b.m;
+
+                if(map[i][j].size() == 1){
+                    // 1개면 그냥 넣는다
+                    q.add(map[i][j].get(0));
+                }
+                if(map[i][j].size() >= 2){
+                    int dm = getMass(i, j);
+                    int ds = getSpeed(i, j);
+                    int dir = getDir(i, j);
+
+                    if(dm > 0){
+                        for(int k=0; k<=6; k+=2){
+                            Ball next = new Ball(i, j, dm, ds, dir + k);
+                            q.add(next);
+                        }
                     }
+
                 }
             }
         }
     }
-    static void copyMap(ArrayList<Ball>[][] from, ArrayList<Ball>[][] to){
-        for(int i=1; i<n+1; i++){
-            for(int j=1; j<n+1; j++){
-                to[i][j] = from[i][j];
-            }
-        }
-    }
 
-    static void move() {
-        ArrayList<Ball>[][] tempMap = new ArrayList[n+1][n+1];
-        init(tempMap);
-
-        for(int i=1; i<n+1; i++){
-            for(int j=1; j<n+1; j++){
-                if(map[i][j].size() > 0){
-                    for(Ball b : map[i][j]){
-                        Ball moved = moveBall(b);
-                        tempMap[moved.r][moved.c].add(moved);
-                    }
-                }
-            }
-        }
-        copyMap(tempMap, map);
-
-    }
+    
     static int[] fdx = {-1, -1, 0, 1, 1, 1, 0, -1};
     static int[] fdy = {0, 1, 1, 1, 0, -1, -1, -1};
     static Ball moveBall(Ball b){
