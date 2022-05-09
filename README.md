@@ -1,4 +1,4 @@
-# BOJ Log
+# Algorithm Log
 <img src="http://mazandi.herokuapp.com/api?handle=bkikis&theme=warm"/>
 
 
