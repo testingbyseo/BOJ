@@ -41,12 +41,12 @@ public class Main {
             queries[i][2] = Integer.parseInt(st.nextToken());
             queries[i][3] = Integer.parseInt(st.nextToken());
         }
-        int[][] prefix = new int[n+1][m+1];
-        for(int i=0; i<n+1; i++){
-            int sum = 0;
-            for(int j=0; j<m+1; j++){
-                sum += arr[i][j];
-                prefix[i][j] = sum;
+        int[][] dp = new int[n+1][m+1];
+        for(int i=1; i<n+1; i++){
+            for(int j=1; j<m+1; j++){
+                // (i, j)의 구간합
+                // (위쪽 합) + (왼쪽 합) - (교집합) + (현재위치 값)
+                dp[i][j] = dp[i-1][j] + dp[i][j-1] - dp[i-1][j-1] + arr[i][j];
             }
         }
 
@@ -55,11 +55,8 @@ public class Main {
             int j = q[1];
             int x = q[2];
             int y = q[3];
-            result = 0;
 
-            for(int r=i; r <= x; r++){
-                result += prefix[r][y] - prefix[r][j-1];
-            }
+            result = dp[x][y] - dp[x][j-1] - dp[i-1][y] + dp[i-1][j-1];
             sb.append(result).append("\n");
         }
 
